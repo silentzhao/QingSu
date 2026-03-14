@@ -126,7 +126,9 @@ class BagListItem extends StatelessWidget {
                 Text(
                   entry.item.name,
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w800),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -143,13 +145,15 @@ class BagListItem extends StatelessWidget {
                       child: Text(
                         '${entry.quantity}',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w800),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                     _QtyButton(icon: Icons.add, onTap: onIncrement),
                     const Spacer(),
                     Text(
-                      '¥${entry.subtotal}',
+                      '楼${entry.subtotal}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -171,67 +175,111 @@ class OrderRecordCard extends StatelessWidget {
   const OrderRecordCard({
     required this.order,
     this.margin = const EdgeInsets.only(bottom: 14),
+    this.onTap,
+    this.onAdvance,
+    this.canAdvance = false,
+    this.advanceButtonKey,
     super.key,
   });
 
   final OrderRecord order;
   final EdgeInsetsGeometry margin;
+  final VoidCallback? onTap;
+  final VoidCallback? onAdvance;
+  final bool canAdvance;
+  final Key? advanceButtonKey;
 
   @override
   Widget build(BuildContext context) {
-    return ListItemCard(
-      margin: margin,
-      padding: const EdgeInsets.all(22),
-      radius: 28,
-      shadow: const BoxShadow(
-        color: Color(0x12000000),
-        blurRadius: 24,
-        offset: Offset(0, 12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Tag(label: order.status, color: order.badgeColor),
-              const Spacer(),
-              Text(
-                order.totalPrice,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+    return InkWell(
+      borderRadius: BorderRadius.circular(28),
+      onTap: onTap,
+      child: ListItemCard(
+        margin: margin,
+        padding: const EdgeInsets.all(22),
+        radius: 28,
+        shadow: const BoxShadow(
+          color: Color(0x12000000),
+          blurRadius: 24,
+          offset: Offset(0, 12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Tag(
+                  label: order.displayStatus,
+                  color: order.displayBadgeColor,
+                ),
+                const Spacer(),
+                Text(
+                  order.totalPrice,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              order.title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              order.schedule,
+              style: const TextStyle(color: Color(0xFF5E6D60)),
+            ),
+            const SizedBox(height: 10),
+            Text(order.summary, style: const TextStyle(height: 1.5)),
+            if (order.bundleTitle != null) ...[
+              const SizedBox(height: 10),
+              Tag(
+                label: '偏好套餐: ${order.bundleTitle!}',
+                color: const Color(0xFFF3EDE2),
               ),
             ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            order.title,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            order.schedule,
-            style: const TextStyle(color: Color(0xFF5E6D60)),
-          ),
-          const SizedBox(height: 10),
-          Text(order.summary, style: const TextStyle(height: 1.5)),
-          const SizedBox(height: 12),
-          ...order.items.map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.check_circle_outline,
-                    size: 18,
-                    color: Color(0xFF506D49),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(item)),
-                ],
+            if (order.currentProgress != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                key: Key('order-card-progress-${order.id}'),
+                '当前进度: ${order.currentProgress!.title}',
+                style: const TextStyle(
+                  color: Color(0xFF5E6D60),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+            if (canAdvance && onAdvance != null) ...[
+              const SizedBox(height: 12),
+              FilledButton.tonalIcon(
+                key: advanceButtonKey,
+                onPressed: onAdvance,
+                icon: const Icon(Icons.route_outlined),
+                label: const Text('推进节点'),
+              ),
+            ],
+            const SizedBox(height: 12),
+            ...order.items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle_outline,
+                      size: 18,
+                      color: Color(0xFF506D49),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(item)),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

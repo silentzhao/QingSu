@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../state/app_state.dart';
+import '../widgets/app_ui.dart';
 import '../widgets/common_widgets.dart';
 import 'main_shell.dart';
 import 'onboarding_page.dart';
@@ -11,6 +12,22 @@ class AppEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = AppStateScope.of(context);
+    if (!state.ready) {
+      return const AppBackdrop(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BrandBadge(),
+              SizedBox(height: 18),
+              CircularProgressIndicator(color: Color(0xFF789B56)),
+              SizedBox(height: 14),
+              Text('正在准备今日的轻食灵感'),
+            ],
+          ),
+        ),
+      );
+    }
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 420),
       switchInCurve: Curves.easeOutCubic,

@@ -4,4 +4,7 @@ import 'app.dart';
 
 export 'app.dart' show LightFoodDemoApp;
 
-void main() => runApp(const LightFoodDemoApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const LightFoodDemoApp());
+}

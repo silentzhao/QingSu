@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../data/demo_data.dart';
+import '../models/app_models.dart';
+import '../state/app_state.dart';
 import '../widgets/app_ui.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/home_cards.dart';
@@ -23,6 +25,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final preferences = AppStateScope.of(context).onboardingPreferences;
+    final heroItem = _preferredHeroItem(preferences);
     return AppBackdrop(
       child: AnimatedBuilder(
         animation: _scrollController,
@@ -33,7 +37,9 @@ class _HomePageState extends State<HomePage> {
             controller: _scrollController,
             slivers: [
               const SliverToBoxAdapter(child: SizedBox(height: 18)),
-              const SliverToBoxAdapter(child: _HomeHeader()),
+              SliverToBoxAdapter(
+                child: _HomeHeader(preferences: preferences),
+              ),
               SliverToBoxAdapter(
                 child: Reveal(
                   delay: const Duration(milliseconds: 120),
@@ -42,7 +48,7 @@ class _HomePageState extends State<HomePage> {
                     factor: 0.18,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                      child: HeroCard(item: menuItems.first),
+                      child: HeroCard(item: heroItem),
                     ),
                   ),
                 ),
@@ -134,12 +140,15 @@ class _HomePageState extends State<HomePage> {
                       title: '品牌故事', subtitle: '让用户感觉这不只是菜单，而是一套生活方式'),
                 ),
               ),
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Reveal(
-                  delay: Duration(milliseconds: 620),
+                  delay: const Duration(milliseconds: 620),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: StoryCard(tags: ['高蛋白搭配', '适合工作日午餐', '清爽但有饱腹感']),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: StoryCard(
+                      tags: preferences?.storyTags ??
+                          const ['高蛋白搭配', '适合工作日午餐', '清爽但有饱腹感'],
+                    ),
                   ),
                 ),
               ),
@@ -153,34 +162,55 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _HomeHeader extends StatelessWidget {
-  const _HomeHeader();
+  const _HomeHeader({
+    required this.preferences,
+  });
+
+  final OnboardingPreferences? preferences;
 
   @override
   Widget build(BuildContext context) {
-    return const Reveal(
-      delay: Duration(milliseconds: 40),
+    final title = preferences?.homeTitle ?? '轻植日常';
+    final subtitle = preferences?.homeSubtitle ?? '吃得轻一点，状态好很多';
+    return Reveal(
+      delay: const Duration(milliseconds: 40),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BrandBadge(),
-                  SizedBox(height: 14),
-                  Text('轻植日常',
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.w800)),
-                  SizedBox(height: 4),
-                  Text('吃得轻一点，状态好很多'),
+                  const BrandBadge(),
+                  const SizedBox(height: 14),
+                  Text(title,
+                      style: const TextStyle(
+                          fontSize: 30, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  Text(subtitle),
                 ],
               ),
             ),
-            GlassIcon(icon: Icons.spa_outlined),
+            IconButton.filledTonal(
+              key: const Key('review-onboarding-button'),
+              onPressed: AppStateScope.read(context).reopenOnboarding,
+              icon: const Icon(Icons.tune),
+              tooltip: '重新查看引导',
+            ),
           ],
         ),
       ),
     );
   }
+}
+
+MenuItem _preferredHeroItem(OnboardingPreferences? preferences) {
+  if (preferences == null) {
+    return menuItems.first;
+  }
+  return menuItems.firstWhere(
+    (item) => item.category == preferences.preferredCategory,
+    orElse: () => menuItems.first,
+  );
 }

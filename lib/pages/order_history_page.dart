@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/list_items.dart';
+import 'order_detail_page.dart';
 
 class OrderHistoryPage extends StatelessWidget {
   const OrderHistoryPage({super.key});
@@ -34,7 +35,31 @@ class OrderHistoryPage extends StatelessWidget {
               ...orders.asMap().entries.map(
                     (entry) => Reveal(
                       delay: Duration(milliseconds: 60 + (entry.key * 70)),
-                      child: OrderRecordCard(order: entry.value),
+                      child: OrderRecordCard(
+                        key: Key('order-history-card-${entry.value.id}'),
+                        order: entry.value,
+                        canAdvance: AppStateScope.of(context)
+                            .canAdvanceOrderProgress(entry.value.id),
+                        advanceButtonKey:
+                            Key('order-history-advance-${entry.value.id}'),
+                        onAdvance: () {
+                          AppStateScope.read(context)
+                              .advanceOrderProgress(entry.value.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${entry.value.title} 已推进到下一个节点'),
+                            ),
+                          );
+                        },
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  OrderDetailPage(orderId: entry.value.id),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
             ],

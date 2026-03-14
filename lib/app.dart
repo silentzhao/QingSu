@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 
 import 'pages/app_entry.dart';
+import 'state/app_preferences_store.dart';
 import 'state/app_state.dart';
 
 class LightFoodDemoApp extends StatelessWidget {
-  const LightFoodDemoApp({super.key});
+  const LightFoodDemoApp({
+    super.key,
+    this.preferencesStore,
+  });
+
+  final AppPreferencesStore? preferencesStore;
 
   @override
   Widget build(BuildContext context) {
     return AppStateScope(
-      notifier: AppState(),
+      notifier: AppState(
+        preferencesStore:
+            preferencesStore ?? const SharedPrefsAppPreferencesStore(),
+      ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: '轻植日常',

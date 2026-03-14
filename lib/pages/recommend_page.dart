@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../data/demo_data.dart';
+import '../models/app_models.dart';
+import '../state/app_state.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/recommend_cards.dart';
 
@@ -17,6 +19,16 @@ class _RecommendPageState extends State<RecommendPage> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final preferences = AppStateScope.of(context).onboardingPreferences;
+    final preferredIndex = _preferredCategoryIndex(preferences, categories);
+    if (preferredIndex != selectedCategory) {
+      selectedCategory = preferredIndex;
+    }
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
@@ -24,11 +36,15 @@ class _RecommendPageState extends State<RecommendPage> {
 
   @override
   Widget build(BuildContext context) {
+    final preferences = AppStateScope.of(context).onboardingPreferences;
     final items = selectedCategory == 0
         ? menuItems
         : menuItems
             .where((e) => e.category == categories[selectedCategory])
             .toList();
+    final title = preferences?.recommendationTitle ?? '今天吃点轻松的';
+    final subtitle =
+        preferences?.recommendationSubtitle ?? '把推荐页做得像精品品牌橱窗，用户才会想继续往下看。';
 
     return AppBackdrop(
       child: AnimatedBuilder(
@@ -41,15 +57,15 @@ class _RecommendPageState extends State<RecommendPage> {
               controller: _scrollController,
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
               children: [
-                const Reveal(
-                    delay: Duration(milliseconds: 40),
-                    child: Text('今天吃点轻松的',
-                        style: TextStyle(
+                Reveal(
+                    delay: const Duration(milliseconds: 40),
+                    child: Text(title,
+                        style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.w800))),
                 const SizedBox(height: 6),
-                const Reveal(
-                    delay: Duration(milliseconds: 90),
-                    child: Text('把推荐页做得像精品品牌橱窗，用户才会想继续往下看。')),
+                Reveal(
+                    delay: const Duration(milliseconds: 90),
+                    child: Text(subtitle)),
                 const SizedBox(height: 18),
                 Reveal(
                   delay: const Duration(milliseconds: 150),
@@ -104,4 +120,15 @@ class _RecommendPageState extends State<RecommendPage> {
       ),
     );
   }
+}
+
+int _preferredCategoryIndex(
+  OnboardingPreferences? preferences,
+  List<String> categories,
+) {
+  if (preferences == null) {
+    return 0;
+  }
+  final index = categories.indexOf(preferences.preferredCategory);
+  return index <= 0 ? 0 : index;
 }

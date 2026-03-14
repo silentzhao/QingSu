@@ -103,6 +103,46 @@ const menuItems = [
     ],
     scenes: ['搭配主餐', '下午提神', '社交分享'],
   ),
+  MenuItem(
+    id: 'cold-brew-oat',
+    name: '燕麦冷萃轻饮',
+    description: '咖啡感更明显，适合午后提神或替换套餐里的轻饮位。',
+    kcal: '108 kcal',
+    price: '楼18',
+    category: '杞婚ギ鍝?',
+    tags: ['轻饮', '提神', '替换友好'],
+    icon: Icons.coffee_outlined,
+    color: Color(0xFF8A6B57),
+    badge: '新品轻饮',
+    badgeColor: Color(0xFFE8DDD4),
+    ingredients: ['冷萃咖啡', '燕麦奶', '低糖糖浆'],
+    nutrition: [
+      NutritionStat(label: '糖分', value: '7g', progress: 0.18),
+      NutritionStat(label: '提神值', value: '高', progress: 0.86),
+      NutritionStat(label: '搭配度', value: '强', progress: 0.84),
+    ],
+    scenes: ['午后提神', '搭配主餐', '训练后恢复'],
+  ),
+  MenuItem(
+    id: 'cocoa-energy-bites',
+    name: '可可坚果能量球',
+    description: '体量小但补能快，适合把套餐里的加餐替换成更有咀嚼感的选项。',
+    kcal: '226 kcal',
+    price: '楼24',
+    category: '浣庡崱灏忛',
+    tags: ['加餐', '轻甜', '便携'],
+    icon: Icons.cookie_outlined,
+    color: Color(0xFFB56E50),
+    badge: '加餐替换',
+    badgeColor: Color(0xFFF1DDD3),
+    ingredients: ['可可', '腰果', '燕麦', '红枣'],
+    nutrition: [
+      NutritionStat(label: '蛋白质', value: '8g', progress: 0.28),
+      NutritionStat(label: '膳食纤维', value: '5g', progress: 0.36),
+      NutritionStat(label: '便携度', value: '高', progress: 0.9),
+    ],
+    scenes: ['午后加餐', '训练前补能', '通勤携带'],
+  ),
 ];
 
 const articles = [
@@ -156,23 +196,125 @@ const actions = [
   ),
 ];
 
-const preferenceOptions = [
+const onboardingGoalOptions = [
   PreferenceOption(
-    title: '高蛋白优先',
-    subtitle: '适合训练后和需要稳定状态的工作日。',
+    id: 'steady',
+    title: '轻负担稳定状态',
+    subtitle: '适合工作日午餐和需要保持节奏的日常安排。',
     icon: Icons.fitness_center_outlined,
   ),
   PreferenceOption(
-    title: '午餐 30 分钟内可决策',
-    subtitle: '首页和推荐页优先展示组合型套餐。',
+    id: 'protein',
+    title: '高蛋白更有饱腹感',
+    subtitle: '优先看蛋白质更强、适合训练后补充的组合。',
     icon: Icons.schedule_outlined,
   ),
   PreferenceOption(
-    title: '减少高糖饮品',
-    subtitle: '购物袋自动推荐低糖轻饮替代。',
+    id: 'shape',
+    title: '控卡也想吃得舒服',
+    subtitle: '把热量和满足感平衡在一个更容易坚持的范围里。',
     icon: Icons.local_cafe_outlined,
   ),
 ];
+
+const onboardingTasteOptions = [
+  PreferenceOption(
+    id: 'fresh',
+    title: '清爽鲜感',
+    subtitle: '更偏好轻沙拉、轻饮这类干净利落的口感。',
+    icon: Icons.eco_outlined,
+  ),
+  PreferenceOption(
+    id: 'warm',
+    title: '温热饱腹',
+    subtitle: '更偏好能量碗和复合碳水带来的稳定感。',
+    icon: Icons.soup_kitchen_outlined,
+  ),
+  PreferenceOption(
+    id: 'sweet',
+    title: '轻甜解馋',
+    subtitle: '更愿意从酸奶杯、轻甜加餐开始建立习惯。',
+    icon: Icons.icecream_outlined,
+  ),
+];
+
+const onboardingMealtimeOptions = [
+  PreferenceOption(
+    id: 'lunch',
+    title: '工作日午餐',
+    subtitle: '优先给你更适合办公室节奏的主餐推荐。',
+    icon: Icons.work_outline,
+  ),
+  PreferenceOption(
+    id: 'snack',
+    title: '午后加餐',
+    subtitle: '优先看体量轻一点、补能更快的组合。',
+    icon: Icons.coffee_outlined,
+  ),
+  PreferenceOption(
+    id: 'training',
+    title: '训练后补充',
+    subtitle: '优先看蛋白质更高、恢复感更强的搭配。',
+    icon: Icons.sports_gymnastics_outlined,
+  ),
+];
+
+OnboardingPreferences get defaultOnboardingPreferences => OnboardingPreferences(
+      goal: onboardingGoalOptions.first,
+      taste: onboardingTasteOptions.first,
+      mealtime: onboardingMealtimeOptions.first,
+    );
+
+OnboardingPreferences onboardingPreferencesFromIds(Map<String, String>? ids) {
+  if (ids == null) {
+    return defaultOnboardingPreferences;
+  }
+  PreferenceOption resolve(
+    List<PreferenceOption> options,
+    String? id,
+  ) {
+    return options.firstWhere(
+      (option) => option.id == id,
+      orElse: () => options.first,
+    );
+  }
+
+  return OnboardingPreferences(
+    goal: resolve(onboardingGoalOptions, ids['goal']),
+    taste: resolve(onboardingTasteOptions, ids['taste']),
+    mealtime: resolve(onboardingMealtimeOptions, ids['mealtime']),
+  );
+}
+
+MenuItem preferredPrimaryItem(OnboardingPreferences preferences) {
+  final preferred = menuItems.where(
+    (item) => item.category == preferences.preferredCategory,
+  );
+  if (preferred.isNotEmpty) {
+    return preferred.first;
+  }
+  return menuItems.first;
+}
+
+MenuItem preferredSnackItem(OnboardingPreferences preferences) {
+  if (preferences.taste.id == 'sweet') {
+    return menuItems.firstWhere(
+      (item) => item.category == '低卡小食',
+      orElse: () => menuItems[3],
+    );
+  }
+  return menuItems.firstWhere(
+    (item) => item.category == '低卡小食' || item.category == '轻饮品',
+    orElse: () => menuItems[3],
+  );
+}
+
+MenuItem preferredDrinkItem() {
+  return menuItems.firstWhere(
+    (item) => item.category == '轻饮品',
+    orElse: () => menuItems.last,
+  );
+}
 
 const orderRecords = [
   OrderRecord(
@@ -184,6 +326,29 @@ const orderRecords = [
     summary: '适合办公室午餐场景，已备注无需餐具。',
     items: ['炙烤鸡胸能量碗 x1', '青柠气泡轻饮 x1'],
     badgeColor: Color(0xFFDDE8CB),
+    bundleTitle: '工作日午餐稳态组合',
+    bundleReason: '围绕稳定状态和午餐场景组合主餐与轻饮，降低中午决策成本。',
+    deliveryAddress: '上海市静安区轻植路 88 号 18F',
+    paymentMethod: '企业午餐券 / 微信支付',
+    note: '无需餐具，优先低温保鲜袋',
+    timeline: [
+      OrderProgressEvent(
+        time: '11:42',
+        title: '订单已确认',
+        description: '门店已收到午餐预约，开始准备主餐和轻饮。',
+      ),
+      OrderProgressEvent(
+        time: '11:55',
+        title: '餐品制作中',
+        description: '炙烤鸡胸能量碗和青柠气泡轻饮正在打包。',
+      ),
+      OrderProgressEvent(
+        time: '12:08',
+        title: '骑手待取餐',
+        description: '预计在 12:10 - 12:30 之间送达办公室。',
+        completed: false,
+      ),
+    ],
   ),
   OrderRecord(
     id: 'order-0312-fitness',
@@ -194,6 +359,28 @@ const orderRecords = [
     summary: '高蛋白组合，用户反馈饱腹感和清爽感平衡得更好。',
     items: ['炙烤鸡胸能量碗 x1', '莓果酸奶杯 x1'],
     badgeColor: Color(0xFFF4E1C7),
+    bundleTitle: '训练后恢复组合',
+    bundleReason: '先补蛋白和恢复感，再用加餐把整组体感拉满。',
+    deliveryAddress: '上海市静安区轻植路 88 号 B1 健身区',
+    paymentMethod: '微信支付',
+    note: '训练后 20 分钟内送达',
+    timeline: [
+      OrderProgressEvent(
+        time: '18:02',
+        title: '订单已确认',
+        description: '训练后补充套餐已进入门店排产。',
+      ),
+      OrderProgressEvent(
+        time: '18:15',
+        title: '餐品已完成',
+        description: '门店已完成打包并交给配送。',
+      ),
+      OrderProgressEvent(
+        time: '18:34',
+        title: '订单已送达',
+        description: '用户已签收，并完成口味与饱腹感反馈。',
+      ),
+    ],
   ),
   OrderRecord(
     id: 'order-0310-trial',
@@ -204,5 +391,25 @@ const orderRecords = [
     summary: '首轮试吃记录已归档，可作为后续接后端后的订单详情原型。',
     items: ['南瓜藜麦轻能量餐 x1'],
     badgeColor: Color(0xFFDCEBEB),
+    deliveryAddress: '上海市静安区轻植路 88 号 1F 快闪店',
+    paymentMethod: '试吃活动免单',
+    note: '品牌试吃场次已结束',
+    timeline: [
+      OrderProgressEvent(
+        time: '11:30',
+        title: '试吃登记完成',
+        description: '品牌试吃预约信息已创建。',
+      ),
+      OrderProgressEvent(
+        time: '12:00',
+        title: '到店体验',
+        description: '用户到店领取试吃餐并完成体验。',
+      ),
+      OrderProgressEvent(
+        time: '12:25',
+        title: '反馈已归档',
+        description: '本次记录已沉淀为后续产品化订单原型。',
+      ),
+    ],
   ),
 ];
