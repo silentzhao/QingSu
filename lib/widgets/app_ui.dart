@@ -1,36 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../models/app_models.dart';
-import '../pages/food_detail_page.dart';
-import '../state/app_state.dart';
-
-void openFoodDetail(BuildContext context, MenuItem item) {
-  Navigator.of(context).push(
-    PageRouteBuilder<void>(
-      transitionDuration: const Duration(milliseconds: 420),
-      reverseTransitionDuration: const Duration(milliseconds: 280),
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          FoodDetailPage(item: item),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        );
-        return FadeTransition(
-          opacity: curved,
-          child: SlideTransition(
-            position:
-                Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
-                    .animate(curved),
-            child: child,
-          ),
-        );
-      },
-    ),
-  );
-}
-
 class BrandBadge extends StatelessWidget {
   const BrandBadge({this.dark = false, super.key});
 
@@ -39,8 +8,8 @@ class BrandBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg =
-        dark ? Colors.white.withValues(alpha: 0.12) : const Color(0xFFE2EBCD);
-    final fg = dark ? Colors.white : const Color(0xFF476240);
+        dark ? Colors.white.withValues(alpha: 0.12) : const Color(0xFFEAF3FF);
+    final fg = dark ? Colors.white : const Color(0xFF1769FF);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration:
@@ -48,14 +17,14 @@ class BrandBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.eco_outlined, size: 16, color: fg),
+          Icon(Icons.verified_user_rounded, size: 16, color: fg),
           const SizedBox(width: 6),
           Text(
-            'BRAND SELECT',
+            '本地守护',
             style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
+                letterSpacing: 0,
                 color: fg),
           ),
         ],
@@ -82,51 +51,8 @@ class GlassIcon extends StatelessWidget {
               color: Color(0x12000000), blurRadius: 24, offset: Offset(0, 10))
         ],
       ),
-      child: Icon(icon, color: const Color(0xFF406042)),
+      child: Icon(icon, color: const Color(0xFF1769FF)),
     );
-  }
-}
-
-class FoodThumb extends StatelessWidget {
-  const FoodThumb({
-    required this.color,
-    required this.icon,
-    required this.width,
-    required this.height,
-    required this.radius,
-    this.heroTag,
-    super.key,
-  });
-
-  final Color color;
-  final IconData icon;
-  final double width;
-  final double height;
-  final double radius;
-  final String? heroTag;
-
-  @override
-  Widget build(BuildContext context) {
-    final child = Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          color.withValues(alpha: 0.94),
-          color.withValues(alpha: 0.62)
-        ]),
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: const [
-          BoxShadow(
-              color: Color(0x16000000), blurRadius: 24, offset: Offset(0, 12))
-        ],
-      ),
-      child: Icon(icon, size: height * 0.34, color: Colors.white),
-    );
-    if (heroTag == null) {
-      return child;
-    }
-    return Hero(tag: heroTag!, child: child);
   }
 }
 
@@ -339,26 +265,6 @@ class InfoRow extends StatelessWidget {
             child: Text(value,
                 style: const TextStyle(fontWeight: FontWeight.w700))),
       ],
-    );
-  }
-}
-
-class FavoriteButton extends StatelessWidget {
-  const FavoriteButton({required this.item, super.key});
-
-  final MenuItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final state = AppStateScope.of(context);
-    final selected = state.isFavorite(item);
-    return IconButton.filledTonal(
-      onPressed: () => state.toggleFavorite(item),
-      style: IconButton.styleFrom(
-        backgroundColor: selected ? const Color(0xFFDBE8CA) : Colors.white,
-      ),
-      icon: Icon(selected ? Icons.favorite : Icons.favorite_border,
-          color: const Color(0xFF3E5D3F)),
     );
   }
 }

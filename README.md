@@ -1,6 +1,6 @@
-# light_food_demo
+# hailiao_me_demo
 
-宣传型轻食 App Flutter demo。
+《还了么》消费监督 App Flutter demo。
 
 ## 结构
 

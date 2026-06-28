@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'bag_page.dart';
-import 'home_page.dart';
-import 'inspire_page.dart';
-import 'profile_page.dart';
-import 'recommend_page.dart';
+import '../features/risk_places/pages/risk_place_list_page.dart';
+import 'risk_records_page.dart';
+import 'settings_page.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -17,11 +15,9 @@ class _MainShellState extends State<MainShell> {
   int _index = 0;
 
   final _pages = const [
-    HomePage(),
-    RecommendPage(),
-    InspirePage(),
-    BagPage(),
-    ProfilePage(),
+    RiskPlaceListPage(),
+    RiskRecordsPage(),
+    SettingsPage(),
   ];
 
   @override
@@ -46,34 +42,29 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           child: NavigationBar(
-            height: 78,
-            backgroundColor: Colors.white.withValues(alpha: 0.92),
-            indicatorColor: const Color(0xFFDDE8CB),
+            height: 70,
+            backgroundColor: Colors.white.withValues(alpha: 0.96),
+            indicatorColor: const Color(0xFFE6F0FF),
             selectedIndex: _index,
             onDestinationSelected: (value) => setState(() => _index = value),
             destinations: const [
               NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: '首页'),
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: '首页',
+              ),
               NavigationDestination(
-                  icon: Icon(Icons.lunch_dining_outlined),
-                  selectedIcon: Icon(Icons.lunch_dining),
-                  label: '推荐'),
+                icon: Icon(Icons.description_outlined),
+                selectedIcon: Icon(Icons.description_rounded),
+                label: '记录',
+              ),
               NavigationDestination(
-                  icon: Icon(Icons.auto_stories_outlined),
-                  selectedIcon: Icon(Icons.auto_stories),
-                  label: '灵感'),
-              NavigationDestination(
-                  icon: Icon(Icons.shopping_bag_outlined),
-                  selectedIcon: Icon(Icons.shopping_bag),
-                  label: '购物袋'),
-              NavigationDestination(
-                  icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person),
-                  label: '我的'),
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings_rounded),
+                label: '设置',
+              ),
             ],
           ),
         ),

@@ -192,15 +192,15 @@ class AppBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(color: const Color(0xFFF6F1E8)),
+        Container(color: const Color(0xFFF7FAFF)),
         const Positioned(
             top: -80,
             left: -20,
-            child: Halo(size: 240, color: Color(0x33D0E0B3))),
+            child: Halo(size: 240, color: Color(0x331769FF))),
         const Positioned(
             top: 180,
             right: -90,
-            child: Halo(size: 220, color: Color(0x1FEF9E6C))),
+            child: Halo(size: 220, color: Color(0x1F25B876))),
         const Positioned.fill(child: ParticleField()),
         child,
       ],
@@ -223,12 +223,12 @@ class _ParticleFieldState extends State<ParticleField>
   )..repeat();
 
   static const _particles = <_Particle>[
-    _Particle(x: 0.12, y: 0.18, size: 8, drift: 18, color: Color(0x2894B86B)),
-    _Particle(x: 0.84, y: 0.12, size: 10, drift: 22, color: Color(0x22F0A06B)),
-    _Particle(x: 0.22, y: 0.48, size: 6, drift: 16, color: Color(0x1E6FA689)),
-    _Particle(x: 0.72, y: 0.38, size: 12, drift: 26, color: Color(0x1CA6C975)),
-    _Particle(x: 0.55, y: 0.72, size: 7, drift: 20, color: Color(0x22E3BB88)),
-    _Particle(x: 0.88, y: 0.78, size: 9, drift: 24, color: Color(0x1891BCA1)),
+    _Particle(x: 0.12, y: 0.18, size: 8, drift: 18, color: Color(0x241769FF)),
+    _Particle(x: 0.84, y: 0.12, size: 10, drift: 22, color: Color(0x2225B876)),
+    _Particle(x: 0.22, y: 0.48, size: 6, drift: 16, color: Color(0x1E7AA7FF)),
+    _Particle(x: 0.72, y: 0.38, size: 12, drift: 26, color: Color(0x1C19C78F)),
+    _Particle(x: 0.55, y: 0.72, size: 7, drift: 20, color: Color(0x221769FF)),
+    _Particle(x: 0.88, y: 0.78, size: 9, drift: 24, color: Color(0x1825B876)),
   ];
 
   @override

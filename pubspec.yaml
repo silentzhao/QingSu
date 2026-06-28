@@ -1,5 +1,5 @@
-name: light_food_demo
-description: A promotional light food Flutter demo.
+name: hailiao_me_demo
+description: A Flutter demo for HailiaoMe, a reasonable spending supervision app.
 publish_to: "none"
 
 version: 1.0.0+1
@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_local_notifications: ^18.0.1
+  flutter_tts: ^4.2.2
+  geolocator: ^13.0.2
   shared_preferences: ^2.5.3
 
 dev_dependencies:
@@ -19,3 +22,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/ui/
